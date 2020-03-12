@@ -99,7 +99,6 @@ rule("Global init")
         Set Global Variable(bots, Empty Array);
         Set Global Variable(speedPercent, 100);
         Set Global Variable(defaultFacingDirection, Vector(162, 60, 0));
-        Disable Inspector Recording;
         Create HUD Text(All Players(All Teams), Null, Null, Custom String("Speed: {0}%", Global Variable(speedPercent), Null, Null), Right,
             0, White, White, White, Visible To and String, Default Visibility);
         Create HUD Text(All Players(All Teams), Null, Null, Custom String(
