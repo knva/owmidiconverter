@@ -25,7 +25,7 @@
 
         <div class="options">
             <div class="tooltipWrapper">
-                <div class="tooltip">开始于
+                <div class="tooltip">开始于:
                     <span class="tooltipText">歌曲中的时间（秒）
                         当脚本开始读取MIDI数据时 置为0以外的值时，从文件的不同部分开始读取。转换器将自动确定它可以放入生成的脚本中的最大数据量。</span>
                 </div>
@@ -116,14 +116,14 @@
             </div>
         </div>
 
-        <button onclick="loadFile();">转换 MIDI</button>
+        <button onclick="loadFile();">点击转换 MIDI</button>
 
         <p>Script info:</p>
         <textarea readonly id="scriptOutput-textarea" rows="7"></textarea>
 
-        <p>Copy these settings and paste them to the <a href="https://i.imgur.com/OqkaGqe.png">Custom Game Settings screen:</a></p>
+        <p>复制到游戏中导入即可 <a href="https://i.imgur.com/OqkaGqe.png">Custom Game Settings screen:</a></p>
         
-        <button id="copyRuleButton" onclick="copyText('ruleOutput-textarea')">Copy to clipboard</button>
+        <button id="copyRuleButton" onclick="copyText('ruleOutput-textarea')">复制到剪贴板</button>
 
         <!-- todo: fix textarea lag issues with Chrome -->
         <textarea readonly id="ruleOutput-textarea" rows="5" wrap="off" 
