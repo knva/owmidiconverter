@@ -7,6 +7,10 @@ If you have any feedback, bug reports, or if you just want to say hello, you can
 # MIDI converter webpage
 [Click here!](https://scrooged2.github.io/owmidiconverter/converter)
 
+
+[中文版](https://knva.github.io/owmidiconverter/converter_cn)
+
+
 # Features
 
 - Play up to a few minutes of any MIDI file
