@@ -1,0 +1,392 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<meta charset="utf-8">
+
+<head>
+    <link rel="stylesheet" href="converterpagecss.css">
+    <title>Overwatch MIDI converter</title>
+</head>
+
+<body>
+    <div class="center">
+        <a href="https://github.com/ScroogeD2/owmidiconverter">
+            <h1>Overwatch MIDI converter</h1>
+        </a>
+
+        <div>
+            <p>选择.mid文件上传:
+                <input type="file" id="file-input" accept="audio/midi">
+            </p>
+        </div>
+
+        <p>如何使用请查看：<br>
+        <a href ="https://github.com/ScroogeD2/owmidiconverter#how-to-use">点我查看如何使用</a></p>
+
+        <div class="options">
+            <div class="tooltipWrapper">
+                <div class="tooltip">开始于
+                    <span class="tooltipText">歌曲中的时间（秒）
+                        当脚本开始读取MIDI数据时 置为0以外的值时，从文件的不同部分开始读取。转换器将自动确定它可以放入生成的脚本中的最大数据量。</span>
+                </div>
+            </div>
+            <input class="textInput" type="text" id="startTimeInput" value="0">
+
+            <div class="tooltipWrapper">
+                <div class="tooltip">声道:
+                    <span class="tooltipText">多声道会影响玩家数量：</span>
+                </div>
+            </div>
+            <input class="textInput" type="text" id="voicesInput" value="6">
+
+            <div class="tooltipWrapper">
+                <div class="tooltip">语言:
+                    <span class="tooltipText">语言决定了你的脚本输出</span>
+                </div>
+            </div>
+            <select class="dropdownInput" id="languageInput">
+                <option selected value="zh-CN">简体中文</option>
+                <option value="en-US">English</option>
+                <option value="es-ES">Español (EU)</option>
+                <option value="es-MX">Español (AL)</option>
+                <option value="it-IT">Italiano</option>
+                <option value="ru-RU">Русский</option>
+                <option value="pl-PL">Polski</option>
+                <option value="fr-FR">Français</option>
+                <option value="de-DE">Deutsch</option>
+                <option value="pt-BR">Português</option>
+                <option value="ja-JP">日本語</option>
+                <option value="ko-KR">한국어</option>
+                <option value="zh-TW">繁體中文</option>
+            </select>
+        </div>
+
+        <button id="collapseButton" onclick="collapseElementAfter(this)">更多选项  +</button>
+        <div class="collapsible">
+
+            <div class="options">
+                <div class="tooltipWrapper">
+                    <div class="tooltip">Generate Full Gamemode Settings
+                        <span class="tooltipText">If unchecked, only the workshop rules containing the song will be generated. 
+                            Make sure to remove all "Song Data" rules before pasting in the new script.</span>
+                    </div>
+                </div>
+                <input class="checkboxInput" type="checkbox" id="includeFullSettingsCheckBox" checked>
+
+                <div class="tooltipWrapper">
+                    <div class="tooltip">Make bots invisible
+                        <span class="tooltipText">Make the bots playing the song invisible. Their primary fire remains visible.</span>
+                    </div>
+                </div>
+                <input class="checkboxInput" type="checkbox" id="botsInvisibleCheckbox" checked>
+
+                <div class="tooltipWrapper">
+                    <div class="tooltip">Limit player slots
+                        <span class="tooltipText">Remove player slots from the game based on the amount of bots playing the song.
+                            Disabling this may cause bots to despawn when new players join an already full game.</span>
+                    </div>
+                </div>
+                <input class="checkboxInput" type="checkbox" id="restrictSlotsCheckbox" checked>
+
+                <div class="tooltipWrapper">
+                    <div class="tooltip">Choose piano:
+                        <span class="tooltipText">Select the piano in Paris that the bots will play.</span>
+                    </div>
+                </div>
+                <select class="dropdownInput" id="pianoSelectInput">
+                    <option value="pointA">Point A</option>
+                    <option selected value="pointB">Point B</option>
+                </select>
+
+                <div class="tooltipWrapper">
+                    <div class="tooltip">Disable players' abilities
+                        <span class="tooltipText">Disable all abilities, ultimates, melee attacks, as well as primary and secondary fires.</span>
+                    </div>
+                </div>
+                <input class="checkboxInput" type="checkbox" id="restrictAbilitiesCheckbox">
+                
+                <div class="tooltipWrapper">
+                    <div class="tooltip">Bans for host player
+                        <span class="tooltipText">Include a ban system for temporarily removing troublemakers: 
+                            When the host player presses Crouch (Ctrl) + Reload (R), the player he is aiming towards will be teleported out for 30 seconds.</span>
+                    </div>
+                </div>
+                <input class="checkboxInput" type="checkbox" id="includeBanSystemCheckbox">
+
+            </div>
+        </div>
+
+        <button onclick="loadFile();">转换 MIDI</button>
+
+        <p>Script info:</p>
+        <textarea readonly id="scriptOutput-textarea" rows="7"></textarea>
+
+        <p>Copy these settings and paste them to the <a href="https://i.imgur.com/OqkaGqe.png">Custom Game Settings screen:</a></p>
+        
+        <button id="copyRuleButton" onclick="copyText('ruleOutput-textarea')">Copy to clipboard</button>
+
+        <!-- todo: fix textarea lag issues with Chrome -->
+        <textarea readonly id="ruleOutput-textarea" rows="5" wrap="off" 
+                  autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"></textarea>
+        <p></p>
+    </div>
+
+    <!-- Import OverPy for language translations -->
+    <script src="overpy/utils/other.js"></script>
+
+    <script src="overpy/doc/actions.js"></script>
+    <script src="overpy/doc/values.js"></script>
+    <script src="overpy/doc/maps.js"></script>
+    <script src="overpy/doc/heroes.js"></script>
+    <script src="overpy/doc/gamemodes.js"></script>
+    <script src="overpy/doc/constants.js"></script>
+    <script src="overpy/doc/keywords.js"></script>
+    <script src="overpy/doc/customGameSettings.js"></script>
+    <script src="overpy/doc/opy/functions.js"></script>
+    <script src="overpy/doc/opy/memberFunctions.js"></script>
+    <script src="overpy/doc/opy/preprocessing.js"></script>
+    
+    <script src="overpy/utils/compilation.js"></script>
+    <script src="overpy/utils/decompilation.js"></script>
+    <script src="overpy/utils/logging.js"></script>
+    <script src="overpy/utils/optimization.js"></script>
+    <script src="overpy/utils/translation.js"></script>
+    <script src="overpy/utils/varNames.js"></script>
+    
+    <script src="overpy/globalVars.js"></script>
+    <script src="overpy/decompiler.js"></script>
+    <script src="overpy/tokenizer.js"></script>
+    <script src="overpy/compiler.js"></script>
+    <script src="overpy/doc/stringKw.js"></script>
+    
+    <!-- todo: only import convertMidi and CONVERTER_SETTINGS_INFO instead of the whole file -->
+    <script type="text/javascript" src="src/owmidiparser.js"></script>
+    <script type="text/javascript" src="src/workshopScript_en-US.js"></script>
+
+    <script type="text/javascript" src="https://unpkg.com/@tonejs/midi"></script>
+
+    <script>
+        "use strict";
+
+        const ERRORS = {
+            MIDI_CONVERTER_ERROR: "Error: the MIDI file could not be converted.\n",
+            TRANSLATION_ERROR: "Error: the generated workshop script could not be translated.\n",
+            GENERAL_ERROR: "An error occurred. Please check the console: F12 (Firefox) or Ctrl+Shift+J (Chrome).\n"
+        };
+
+        // Maximum amount of players in an Overwatch match
+        const MAX_PLAYERS = 12;
+
+
+        function loadFile() {
+            let file = document.getElementById("file-input").files[0];
+            if (!file) {
+                return;
+            }
+
+            updateElementValue("scriptOutput-textarea", "");
+            updateElementValue("ruleOutput-textarea", "");
+
+            const reader = new FileReader();
+
+            reader.onload = function (event) {
+                try {
+                    // Read MIDI file with Tonejs/Midi
+                    let mid = new Midi(event.target.result);
+                    parseMidi(mid);
+                }
+                catch (error) {
+                    updateElementValue("scriptOutput-textarea", ERRORS["GENERAL_ERROR"]);
+                    console.error(error);
+                }
+            }
+            reader.readAsArrayBuffer(file);
+        }
+        
+
+        function parseMidi(mid) {
+            // Converts MIDI data, outputs it
+
+            const converterSettings = getConverterSettings();
+            let convertedMidi = {};
+            
+            try {
+                convertedMidi = convertMidi(mid, converterSettings);
+            }
+            catch (error) {
+                updateElementValue("scriptOutput-textarea", ERRORS["MIDI_CONVERTER_ERROR"]);
+                console.error(error);
+                return;
+            }
+
+            if (convertedMidi.rules == "") {
+                let output = "";
+                for (let error of convertedMidi.errors) {
+                    output += error;
+                } 
+                for (let warning of convertedMidi.warnings) {
+                    output += warning;
+                } 
+                updateElementValue("scriptOutput-textarea", output);
+
+            } else {
+                let scriptLanguage = document.getElementById("languageInput").value;
+                let customGameSettings = "";
+
+                if (document.getElementById("includeFullSettingsCheckBox").checked) {
+                    // Add BASE_SETTINGS
+                    customGameSettings += generateIngameSettings(converterSettings["voices"]);
+                } else {
+                    // Only add variables used in the converted midi script
+                    customGameSettings += CONVERTED_MIDI_VARS;
+                }
+
+                customGameSettings += convertedMidi.rules;
+
+                if (scriptLanguage != "en-US") {
+                    customGameSettings = translateWorkshopScript(customGameSettings, scriptLanguage);
+                }
+                
+                let scriptOutput = "";
+                scriptOutput += `${convertedMidi.skippedNotes} note(s) left out due to too many overlapping pitches\n` +
+                                `${convertedMidi.transposedNotes} note(s) transposed\n` +
+                                `${converterSettings["voices"]} voice(s)\n\n`;
+                
+                if (convertedMidi.warnings.length != 0) {
+                    for (let warning of convertedMidi.warnings) {
+                        scriptOutput += warning;
+                    } 
+                }
+
+                scriptOutput += `MIDI file successfully read from ${converterSettings["startTime"]} second(s) ` +
+                                `to ${roundToPlaces(convertedMidi.stopTime, 1)} second(s),\n` +
+                                `${Math.round(100*(convertedMidi.stopTime - converterSettings["startTime"]) / convertedMidi.duration)}% ` +
+                                `of the song converted to workshop arrays.\n` +
+                                `Language: ${scriptLanguage}\n`;
+
+                updateElementValue("scriptOutput-textarea", scriptOutput);
+                updateElementValue("ruleOutput-textarea", customGameSettings + "\n");
+            }
+        }
+
+        
+        function getConverterSettings() {
+            // Reads the values in the webpage input fields, 
+            // ensures that they're in the correct numerical ranges
+
+            let userSettings = {};
+
+            for (let setting in CONVERTER_SETTINGS_INFO) {
+
+                let userValue = parseFloat(document.getElementById(setting + "Input").value);
+
+                if (isNaN(userValue)) {
+                    userValue = CONVERTER_SETTINGS_INFO[setting]["DEFAULT"];
+                }
+
+                else if (userValue < CONVERTER_SETTINGS_INFO[setting]["MIN"]) {
+                    userValue = CONVERTER_SETTINGS_INFO[setting]["MIN"];
+                }
+
+                else if (userValue > CONVERTER_SETTINGS_INFO[setting]["MAX"]) {
+                    userValue = CONVERTER_SETTINGS_INFO[setting]["MAX"];
+                }
+
+                document.getElementById(setting + "Input").value = userValue;
+                userSettings[setting] = userValue;
+            }
+
+            return userSettings;
+        }
+        
+
+        function generateIngameSettings(maxBots) {
+            // Modifies BASE_SETTINGS based on the user's selected settings, 
+            // and returns the modified script.
+
+            const userSettings = {
+                botsInvisible: document.getElementById("botsInvisibleCheckbox").checked,
+                restrictSlots: document.getElementById("restrictSlotsCheckbox").checked,
+                selectedPiano: document.getElementById("pianoSelectInput").value,
+                restrictAbilities: document.getElementById("restrictAbilitiesCheckbox").checked,
+                includeBanSystem: document.getElementById("includeBanSystemCheckbox").checked
+            };
+
+            let customGameSettings = BASE_SETTINGS;
+
+            if (!userSettings.botsInvisible) {
+                customGameSettings = customGameSettings.replace(SCRIPTS["botsInvisible"], "");
+            }
+
+            if (userSettings.restrictSlots) {
+                customGameSettings = customGameSettings.replace(SCRIPTS["restrictSlots"], 
+                                                                `Max FFA Players: ${MAX_PLAYERS - maxBots}`)
+            }
+            
+            customGameSettings += PIANO_POSITION_SCRIPTS[userSettings.selectedPiano];
+            
+            if (!userSettings.restrictAbilities) {
+                customGameSettings = customGameSettings.replace(SCRIPTS["restrictAbilities"], "");
+            }
+            
+            if (!userSettings.includeBanSystem) {
+                customGameSettings = customGameSettings.replace(SCRIPTS["includeBanSystem"], "");
+            }
+            return customGameSettings;
+            
+        }
+
+        function translateWorkshopScript(script, language) {
+            // Translates by decompiling to OverPy script, 
+            // then compiling back to workshop script in the selected language
+
+            try {
+                // Add disableUnusedVars to avoid clutter
+                let overpyScript = "#!disableUnusedVars" + decompileAllRules(script);
+
+                return compile(overpyScript, language).result;
+            }
+            catch (error) {
+                updateElementValue("scriptOutput-textarea", ERRORS["TRANSLATION_ERROR"]);
+                console.error(error);
+            }
+        }
+
+            
+        function copyText(elementId) {
+            // Copy to clipboard
+            document.getElementById(elementId).select();
+            document.execCommand("copy");
+        }
+        
+        function collapseElementAfter(element1) {
+            // Toggles the visibility of the element after element1, switches "+" with "–"
+
+            let collapsibleElement = element1.nextElementSibling;
+            
+            if (collapsibleElement.style.display === "block") {
+                collapsibleElement.style.display = "none";
+                element1.innerHTML = element1.innerHTML.replace("–", "+")
+            } else {
+                collapsibleElement.style.display = "block";
+                element1.innerHTML = element1.innerHTML.replace("+", "–")
+            }
+        }
+
+        function updateElementValue(elementId, newValue, keepOldText = false) {
+            // Updates text in a webpage element.
+
+            let outputText = "";
+            let oldValue = document.getElementById(elementId).value;
+
+            if (keepOldText) {
+                outputText = oldValue + newValue;
+            } else {
+                outputText = newValue;
+            }
+            document.getElementById(elementId).value = outputText;
+        }
+    </script>
+</body>
+
+</html>
