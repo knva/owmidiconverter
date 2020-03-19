@@ -83,34 +83,34 @@ const customGameSettingsKw =
         "zh-TW": "停用"
     },
     "_yes": {
-        "guid": "0000000058F3",
+        "guid": "00000000F406",
         "en-US": "Yes",
         "de-DE": "Ja",
         "es-ES": "Sí",
         "es-MX": "Sí",
         "fr-FR": "Oui",
-        "it-IT": "On",
+        "it-IT": "Sì",
         "ja-JP": "はい",
-        "ko-KR": "필요",
+        "ko-KR": "네",
         "pl-PL": "Tak",
         "pt-BR": "Sim",
         "ru-RU": "Да",
         "zh-CN": "是",
-        "zh-TW": "啟用"
+        "zh-TW": "是"
     },
     "_no": {
-        "guid": "0000000058F4",
+        "guid": "00000000F407",
         "en-US": "No",
         "de-DE": "Nein",
         "fr-FR": "Non",
-        "it-IT": "Off",
+        "it-IT": "No",
         "ja-JP": "いいえ",
-        "ko-KR": "필요 없음",
+        "ko-KR": "아니요",
         "pl-PL": "Nie",
         "pt-BR": "Não",
         "ru-RU": "Нет",
         "zh-CN": "否",
-        "zh-TW": "停用"
+        "zh-TW": "否"
     }
 }
 //end-json
